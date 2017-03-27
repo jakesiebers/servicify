@@ -1,0 +1,16 @@
+{
+  "name": "joy-servicify",
+  "version": "0.0.1",
+  "description": "\"Turn your functions into a service!\"",
+  "main": "Servicify.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://jake-siebers@bitbucket.org/joylife/servicify.git"
+  },
+  "author": "Jake Siebers",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/joylife/servicify#readme"
+}
