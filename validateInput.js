@@ -1,7 +1,4 @@
 
-const _ = require('lodash');
-
-
 const ofType = type => a => typeof a === type;
 
 const formats = {

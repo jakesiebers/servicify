@@ -14,11 +14,14 @@ const mathEndpoints = [
   {
     method: 'GET',
     name: 'add',
+    // Arguments currently on validate
+    // In the future they will parse too allowing for
+    // custom query parameters and /url/ parameters
     arguments: {
       a: "number",
       b: "number",
     },
-    action: ({ a, b }) => Number(a) + Number(b),
+    action: ({ a, b }) => a + b,
     description: "add a and b",
   },
   {
@@ -28,6 +31,11 @@ const mathEndpoints = [
       a: "number",
       b: "number",
     },
+    // If you want to skip the default handling of the request and response,
+    // you can have your action take 2 arguments (req, res) and you can write
+    // completely custom handling. The arguments parsed as json and passed to a
+    // function and then the result returned in the body as json works for 95%
+    // of situations but for the others this is an escape hatch.
     action: (req, res) => {
       const query = JSON.parse(req.query.data);
       res.json({
@@ -43,7 +51,7 @@ const mathEndpoints = [
       a: "number",
       b: "number",
     },
-    action: ({ a, b }) => Number(a) * Number(b),
+    action: ({ a, b }) => a * b,
     description: "multiply a and b together",
   },
   {
@@ -60,6 +68,9 @@ const mathEndpoints = [
 
 
 // Make the service server side
+// Servicify takes a list of endpoints and returns an express app
+// Usually you can just start the app listening but you also have the option
+// to add any custom middleware before you do so
 
 const servicify = require('../servicify');
 
@@ -69,6 +80,10 @@ mathService.listen(8080, () => console.log('Listening'));
 
 
 // Consume the service from the client side
+// On the client side you import the consumeService library
+// Consume service holds none of the server side code, it just takes a location,
+// hits location/endpoints to get auto-generated docs, and then builds a facade
+// to run those functions `locally` (though they are actually run remotely on the service)
 
 const consumeService = require('../consumeService');
 
