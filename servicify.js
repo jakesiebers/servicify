@@ -15,6 +15,12 @@ const makeDocs = endpoints => endpoints.map(endpoint => ({
 
 const Servicify = endpoints => {
 
+  const app = express();
+
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
+
+
   const docs = makeDocs(endpoints);
   endpoints.push({
     method: 'GET',
@@ -24,9 +30,6 @@ const Servicify = endpoints => {
     action: () => docs
   });
 
-  const app = express();
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
 
   endpoints.forEach(endpoint => {
     const method = endpoint.method.toLowerCase();
@@ -43,9 +46,9 @@ const Servicify = endpoints => {
             if(req.body) res = Object.assign(res, req.body);
             return res;
           };
-
           return Promise.resolve()
-            .then(() => endpoint.action(getArguments(req)))
+            .then(() => getArguments(req))
+            .then(endpoint.action)
             .then(
               // Successful response!
               data => {
@@ -79,6 +82,7 @@ const Servicify = endpoints => {
       }
     );
   });
+
 
   return app;
 

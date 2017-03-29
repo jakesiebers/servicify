@@ -34,6 +34,16 @@ const mathEndpoints = [
       });
     },
     description: "subtract b from a",
+  },
+  {
+    method: 'POST',
+    name: 'multiply',
+    arguments: {
+      a: "number",
+      b: "number",
+    },
+    action: ({ a, b }) => Number(a) * Number(b),
+    description: "multiply a and b together",
   }
 ];
 
@@ -60,4 +70,5 @@ describe('Servicify', function() {
   it('Should return 5', () => clientSideMathService.then(math => math.add({ a: 2, b: 3 })).should.eventually.equal(5));
   it('Should return 5', () => clientSideMathService.run('add', { a: 2, b: 3 }).should.eventually.equal(5));
   it('Should return 5', () => clientSideMathService.run('subtract', { a: 8, b: 3 }).should.eventually.equal(5));
+  it('Should return 6', () => clientSideMathService.run('multiply', { a: 2, b: 3 }).should.eventually.equal(6));
 });

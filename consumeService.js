@@ -45,18 +45,39 @@ const consumeService = (domain, port) => {
         port,
         pathname: endpoint.name,
         query: args,
-        protocol: 'http'
+        protocol: 'http',
       });
 
       const req = http.get(url, processRequestJSONResult(resolve, reject));
 
-      req.on('error', e => {
-        reject(e);
-      });
+      req.on('error', e => reject(e));
 
       req.end();
 
-    })
+    }),
+    post : (endpoint, args) => new Promise((resolve, reject) => {
+
+      const postData = JSON.stringify(args || {});
+
+      const options = {
+        hostname: domain,
+        port,
+        path: `/${endpoint.name}`,
+        method: 'POST',
+        headers: {
+          'Content-Type' : 'application/json'
+        }
+      };
+
+      const req = http.request(options, processRequestJSONResult(resolve, reject));
+
+      req.write(postData);
+
+      req.on('error', e => reject(e));
+
+      req.end();
+
+    }),
   };
 
   const endpoints = request.get({ name: 'endpoints' });
