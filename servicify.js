@@ -4,6 +4,8 @@ const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const validateInput = require('./validateInput');
+
 
 
 const makeDocs = endpoints => endpoints.map(endpoint => ({
@@ -42,12 +44,19 @@ const Servicify = endpoints => {
         } else {
           const getArguments = () => {
             let res = {};
-            if(req.query) res = Object.assign(res, req.query);
+            try{
+              const query = JSON.parse(req.query.data);
+              res = Object.assign(res, query);
+            }catch(e){};
             if(req.body) res = Object.assign(res, req.body);
             return res;
           };
+
+          const validArguments = args => (endpoint.arguments && validateInput(endpoint.arguments, args)).then(() => args);
+
           return Promise.resolve()
             .then(() => getArguments(req))
+            .then(validArguments)
             .then(endpoint.action)
             .then(
               // Successful response!

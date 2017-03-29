@@ -44,7 +44,9 @@ const consumeService = (domain, port) => {
         hostname: domain,
         port,
         pathname: endpoint.name,
-        query: args,
+        query: {
+          data: JSON.stringify(args)
+        },
         protocol: 'http',
       });
 

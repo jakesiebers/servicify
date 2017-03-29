@@ -29,8 +29,9 @@ const mathEndpoints = [
       b: "number",
     },
     action: (req, res) => {
+      const query = JSON.parse(req.query.data);
       res.json({
-        data: Number(req.query.a) - Number(req.query.b)
+        data: Number(query.a) - Number(query.b)
       });
     },
     description: "subtract b from a",
@@ -43,6 +44,16 @@ const mathEndpoints = [
       b: "number",
     },
     action: ({ a, b }) => Number(a) * Number(b),
+    description: "multiply a and b together",
+  },
+  {
+    method: 'GET',
+    name: 'join',
+    arguments: {
+      separator: 'string',
+      items: 'array',
+    },
+    action: ({ separator, items }) => items.join(separator),
     description: "multiply a and b together",
   }
 ];
@@ -61,14 +72,16 @@ mathService.listen(8080, () => console.log('Listening'));
 
 const consumeService = require('../consumeService');
 
-const clientSideMathService = consumeService('127.0.0.1', 8080);
+const math = consumeService('127.0.0.1', 8080);
 
 
 // Run tests
 
-describe('Servicify', function() {
-  it('Should return 5', () => clientSideMathService.then(math => math.add({ a: 2, b: 3 })).should.eventually.equal(5));
-  it('Should return 5', () => clientSideMathService.run('add', { a: 2, b: 3 }).should.eventually.equal(5));
-  it('Should return 5', () => clientSideMathService.run('subtract', { a: 8, b: 3 }).should.eventually.equal(5));
-  it('Should return 6', () => clientSideMathService.run('multiply', { a: 2, b: 3 }).should.eventually.equal(6));
+describe('math', function() {
+  it('.then(endpoints => endpoints.add({ a: 2, b: 3 }))', () => math.then(math => math.add({ a: 2, b: 3 })).should.eventually.equal(5));
+  it(".run('add', { a: 2, b: 3 })", () => math.run('add', { a: 2, b: 3 }).should.eventually.equal(5));
+  it(".run('subtract', { a: 8, b: 3 })", () => math.run('subtract', { a: 8, b: 3 }).should.eventually.equal(5));
+  it(".run('multiply', { a: 2, b: 3 })", () => math.run('multiply', { a: 2, b: 3 }).should.eventually.equal(6));
+  it(".run('join', { separator: ',', items: ['a', 'b', 'c'] })", () => math.run('join', { separator: ',', items: ['a', 'b', 'c'] }).should.eventually.equal('a,b,c'));
+  it(".run('add', { a: 2, b: 'asdf' })", () => math.run('add', { a: 2, b: 'asdf' }).should.be.rejectedWith('Problem with key b : must be of type number'));
 });
