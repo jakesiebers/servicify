@@ -35,22 +35,22 @@ const processRequestJSONResult = (resolve, reject) => res => {
 
 };
 
-const consumeService = (domain, port) => {
+const makePath = (endpoint, args) =>
+  endpoint
+  .path
+  .split('/')
+  .map(part => {
+    if(part[0] === ':'){
+      let argKey = part.substring(1);
+      let argValue = args[argKey];
+      delete args[argKey];
+      return argValue;
+    }
+    return part;
+  })
+  .join('/');
 
-  const makePath = (endpoint, args) =>
-    endpoint
-    .path
-    .split('/')
-    .map(part => {
-      if(part[0] === ':'){
-        let argKey = part.substring(1);
-        let argValue = args[argKey];
-        delete args[argKey];
-        return argValue;
-      }
-      return part;
-    })
-    .join('/');
+const consumeService = (domain, port) => {
 
   const request = {
     get : (endpoint, args) => new Promise((resolve, reject) => {

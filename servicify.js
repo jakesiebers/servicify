@@ -34,10 +34,8 @@ const Servicify = endpoints => {
   });
 
 
-  endpoints.forEach(endpoint => {
-    const method = endpoint.method.toLowerCase();
-
-    app[method](
+  endpoints.forEach(endpoint =>
+    app[endpoint.method.toLowerCase()](
       endpoint.path,
       (req, res) => {
         if (endpoint.action.length > 1) {
@@ -45,7 +43,10 @@ const Servicify = endpoints => {
         } else {
           const getArguments = () => Object.assign(
             Object.assign(
-              Object.assign({}, req.body),
+              Object.assign(
+                {},
+                req.body
+              ),
               formats.parseArgs(endpoint.arguments, req.query)
             ),
             formats.parseArgs(endpoint.arguments, req.params)
@@ -54,7 +55,7 @@ const Servicify = endpoints => {
           const validArguments = args => (endpoint.arguments && formats.validateInput(endpoint.arguments, args)).then(() => args);
 
           return Promise.resolve()
-            .then(() => getArguments(req))
+            .then(getArguments)
             .then(validArguments)
             .then(endpoint.action)
             .then(
@@ -88,8 +89,8 @@ const Servicify = endpoints => {
             );
         }
       }
-    );
-  });
+    )
+  );
 
 
   return app;
