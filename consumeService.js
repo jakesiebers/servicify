@@ -37,16 +37,29 @@ const processRequestJSONResult = (resolve, reject) => res => {
 
 const consumeService = (domain, port) => {
 
+  const makePath = (endpoint, args) =>
+    endpoint
+    .path
+    .split('/')
+    .map(part => {
+      if(part[0] === ':'){
+        let argKey = part.substring(1);
+        let argValue = args[argKey];
+        delete args[argKey];
+        return argValue;
+      }
+      return part;
+    })
+    .join('/');
+
   const request = {
     get : (endpoint, args) => new Promise((resolve, reject) => {
 
       const url = URL.format({
         hostname: domain,
         port,
-        pathname: endpoint.name,
-        query: {
-          data: JSON.stringify(args)
-        },
+        pathname: makePath(endpoint, args),
+        query: args,
         protocol: 'http',
       });
 
@@ -64,7 +77,7 @@ const consumeService = (domain, port) => {
       const options = {
         hostname: domain,
         port,
-        path: `/${endpoint.name}`,
+        path: makePath(endpoint, args),
         method: 'POST',
         headers: {
           'Content-Type' : 'application/json'
@@ -82,13 +95,13 @@ const consumeService = (domain, port) => {
     }),
   };
 
-  const endpoints = request.get({ name: 'endpoints' });
+  const endpoints = request.get({ path: '/endpoints' });
 
   const service = endpoints.then(endpoints => {
     const res = {};
     endpoints.forEach(endpoint => {
       const method = endpoint.method.toLowerCase();
-      res[endpoint.name] = (args) => request[method](endpoint, args);
+      res[endpoint.name] = args => request[method](endpoint, args);
     });
     return res;
   });

@@ -12,8 +12,9 @@ chai.should();
 
 const mathEndpoints = [
   {
-    method: 'GET',
     name: 'add',
+    method: 'GET',
+    path: '/add/:a/:b',
     // Arguments currently on validate
     // In the future they will parse too allowing for
     // custom query parameters and /url/ parameters
@@ -25,8 +26,9 @@ const mathEndpoints = [
     description: "add a and b",
   },
   {
-    method: 'GET',
     name: 'subtract',
+    method: 'GET',
+    path: '/subtract',
     arguments: {
       a: "number",
       b: "number",
@@ -37,7 +39,7 @@ const mathEndpoints = [
     // function and then the result returned in the body as json works for 95%
     // of situations but for the others this is an escape hatch.
     action: (req, res) => {
-      const query = JSON.parse(req.query.data);
+      const query = req.query;
       res.json({
         data: Number(query.a) - Number(query.b)
       });
@@ -45,8 +47,9 @@ const mathEndpoints = [
     description: "subtract b from a",
   },
   {
-    method: 'POST',
     name: 'multiply',
+    method: 'POST',
+    path: '/multiply',
     arguments: {
       a: "number",
       b: "number",
@@ -55,8 +58,9 @@ const mathEndpoints = [
     description: "multiply a and b together",
   },
   {
-    method: 'GET',
     name: 'join',
+    method: 'GET',
+    path: '/join',
     arguments: {
       separator: 'string',
       items: 'array',
@@ -98,5 +102,5 @@ describe('math', function() {
   it(".run('subtract', { a: 8, b: 3 })", () => math.run('subtract', { a: 8, b: 3 }).should.eventually.equal(5));
   it(".run('multiply', { a: 2, b: 3 })", () => math.run('multiply', { a: 2, b: 3 }).should.eventually.equal(6));
   it(".run('join', { separator: ',', items: ['a', 'b', 'c'] })", () => math.run('join', { separator: ',', items: ['a', 'b', 'c'] }).should.eventually.equal('a,b,c'));
-  it(".run('add', { a: 2, b: 'asdf' })", () => math.run('add', { a: 2, b: 'asdf' }).should.be.rejectedWith('Problem with key b : must be of type number'));
+  it(".run('add', { a: 2, b: 'asdf' })", () => math.run('add', { a: 2, b: 'asdf' }).should.be.rejectedWith('Problem with key \'b\' : must be of type \'number\''));
 });

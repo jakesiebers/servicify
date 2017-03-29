@@ -4,13 +4,14 @@ const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const validateInput = require('./validateInput');
+const formats = require('./formats');
 
 
 
 const makeDocs = endpoints => endpoints.map(endpoint => ({
   method: endpoint.method,
   name: endpoint.name,
+  path: endpoint.path,
   arguments: endpoint.arguments,
   description: endpoint.description,
 }));
@@ -26,7 +27,7 @@ const Servicify = endpoints => {
   const docs = makeDocs(endpoints);
   endpoints.push({
     method: 'GET',
-    name: 'endpoints',
+    path: '/endpoints',
     arguments: {},
     description: "Documentation on the endpoints provided by this service",
     action: () => docs
@@ -37,22 +38,20 @@ const Servicify = endpoints => {
     const method = endpoint.method.toLowerCase();
 
     app[method](
-      `/${endpoint.name}`,
+      endpoint.path,
       (req, res) => {
         if (endpoint.action.length > 1) {
           return endpoint.action(req, res);
         } else {
-          const getArguments = () => {
-            let res = {};
-            try{
-              const query = JSON.parse(req.query.data);
-              res = Object.assign(res, query);
-            }catch(e){};
-            if(req.body) res = Object.assign(res, req.body);
-            return res;
-          };
+          const getArguments = () => Object.assign(
+            Object.assign(
+              Object.assign({}, req.body),
+              formats.parseArgs(endpoint.arguments, req.query)
+            ),
+            formats.parseArgs(endpoint.arguments, req.params)
+          );
 
-          const validArguments = args => (endpoint.arguments && validateInput(endpoint.arguments, args)).then(() => args);
+          const validArguments = args => (endpoint.arguments && formats.validateInput(endpoint.arguments, args)).then(() => args);
 
           return Promise.resolve()
             .then(() => getArguments(req))
