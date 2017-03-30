@@ -22,7 +22,7 @@ const processRequestJSONResult = (resolve, reject) => res => {
         return;
       }
 
-      if(data.data){
+      if(data.data !== undefined){
          resolve(data.data);
          return;
       }
