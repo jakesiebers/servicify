@@ -26,6 +26,7 @@ const parsers = {
   string: a => a,
   object: parseJSONForConstructor(Object),
   array: parseJSONForConstructor(Array),
+  domain: a => a,
 }
 
 const parseArgs = (template, input) => {
@@ -42,6 +43,8 @@ const parseArgs = (template, input) => {
   return args;
 };
 
+const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/;
+
 const ofType = type => a => typeof a === type;
 
 const formats = {
@@ -49,6 +52,7 @@ const formats = {
   string: ofType('string'),
   object: a => ofType('object')(a) && !formats.array(input),
   array: a => ofType('object')(a) && a.constructor === Array,
+  domain: a => domainRegex.test(a),
 }
 
 const validateType = (type, value, path) => {
