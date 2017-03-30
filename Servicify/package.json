@@ -1,0 +1,16 @@
+{
+  "name": "servicify",
+  "version": "1.0.0",
+  "description": "\"Quickly make a service\"",
+  "main": "Servicify.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jake Siebers",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "http": "0.0.0"
+  }
+}

@@ -76,7 +76,7 @@ const mathEndpoints = [
 // Usually you can just start the app listening but you also have the option
 // to add any custom middleware before you do so
 
-const servicify = require('../servicify');
+const servicify = require('../Servicify/Servicify');
 
 const mathService = servicify(mathEndpoints);
 
@@ -89,7 +89,7 @@ mathService.listen(8080, () => console.log('Listening'));
 // hits location/endpoints to get auto-generated docs, and then builds a facade
 // to run those functions `locally` (though they are actually run remotely on the service)
 
-const consumeService = require('../consumeService');
+const consumeService = require('../ConsumeService/ConsumeService');
 
 const math = consumeService('127.0.0.1', 8080);
 

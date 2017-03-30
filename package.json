@@ -4,7 +4,8 @@
   "description": "\"Turn your functions into a service!\"",
   "main": "Servicify.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "install": "npm install ConsumeService && npm install Servicify"
   },
   "repository": {
     "type": "git",
@@ -13,12 +14,7 @@
   "author": "Jake Siebers",
   "license": "ISC",
   "homepage": "https://bitbucket.org/joylife/servicify#readme",
-  "dependencies": {
-    "body-parser": "^1.17.1",
-    "express": "^4.15.2",
-    "http": "0.0.0",
-    "url": "^0.11.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
