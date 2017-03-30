@@ -1,7 +1,7 @@
 {
-  "name": "servicify",
+  "name": "schema-to-service",
   "version": "1.0.0",
-  "description": "\"Quickly make a service\"",
+  "description": "\"Quickly make a service by providing a REST schema\"",
   "main": "Servicify.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
