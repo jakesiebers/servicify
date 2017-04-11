@@ -50,27 +50,33 @@ const makePath = (endpoint, args) =>
   })
   .join('/');
 
-const consumeService = (domain, port) => {
+function consumeService(config) {
+
+  const { domain, port, name, jwt } = config;
 
   const request = {
-    get : (endpoint, args) => new Promise((resolve, reject) => {
+    get : (endpoint, args, jwt) => new Promise((resolve, reject) => {
 
-      const url = URL.format({
+      const options = {
         hostname: domain,
         port,
-        pathname: makePath(endpoint, args),
-        query: args,
-        protocol: 'http',
-      });
+        path: URL.format({
+          pathname: makePath(endpoint, args),
+          query: args,
+        }),
+        method: 'GET',
+        headers: {}
+      };
+      if(jwt) options.headers.authorization = `Bearer ${jwt}`;
 
-      const req = http.get(url, processRequestJSONResult(resolve, reject));
+      const req = http.request(options, processRequestJSONResult(resolve, reject));
 
       req.on('error', e => reject(e));
 
       req.end();
 
     }),
-    post : (endpoint, args) => new Promise((resolve, reject) => {
+    post : (endpoint, args, jwt) => new Promise((resolve, reject) => {
 
       const postData = JSON.stringify(args || {});
 
@@ -83,6 +89,7 @@ const consumeService = (domain, port) => {
           'Content-Type' : 'application/json'
         }
       };
+      if(jwt) options.headers.authorization = `Bearer ${jwt}`;
 
       const req = http.request(options, processRequestJSONResult(resolve, reject));
 
@@ -98,18 +105,28 @@ const consumeService = (domain, port) => {
   const endpoints = request.get({ path: '/endpoints' });
 
   const service = endpoints.then(endpoints => {
-    const res = {};
+    const res = {
+      name: serviceName
+    };
     endpoints.forEach(endpoint => {
       const method = endpoint.method.toLowerCase();
-      res[endpoint.name] = args => request[method](endpoint, args);
+      res[endpoint.name] = (args, jwt) => request[method](endpoint, args, jwt);
     });
     return res;
   });
 
-  return {
-    then: service.then.bind(service),
-    run: (name, args) => service.then(service => service[name](args))
-  };
+  function run(name, args, jwt) {
+    return service.then(service => {
+      const f = service[name];
+      if(!f) throw 'Not a valid endpoint name.';
+      return f(args, jwt);
+    });
+  }
+  run.withJWT = jwt => (name, args) => run(name, args, jwt);
+  run.then = service.then.bind(service);
+  run.name = serviceName;
+  if (jwt) return run.withJWT(jwt);
+  return run;
 
 };
 
