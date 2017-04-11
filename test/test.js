@@ -78,9 +78,11 @@ const mathEndpoints = [
 
 const servicify = require('../Servicify/Servicify');
 
-const mathService = servicify(mathEndpoints);
-
-mathService.listen(8080, () => console.log('Listening'));
+const mathService = servicify({
+  port: 3001,
+  domain: '127.0.0.1',
+  endpoints: mathEndpoints
+});
 
 
 // Consume the service from the client side
@@ -91,16 +93,18 @@ mathService.listen(8080, () => console.log('Listening'));
 
 const consumeService = require('../ConsumeService/ConsumeService');
 
-const math = consumeService('127.0.0.1', 8080);
+const math = consumeService({
+  port: 3001,
+  domain: '127.0.0.1'
+});
 
 
 // Run tests
 
-describe('math', function() {
-  it('.then(endpoints => endpoints.add({ a: 2, b: 3 }))', () => math.then(math => math.add({ a: 2, b: 3 })).should.eventually.equal(5));
-  it(".run('add', { a: 2, b: 3 })", () => math.run('add', { a: 2, b: 3 }).should.eventually.equal(5));
-  it(".run('subtract', { a: 8, b: 3 })", () => math.run('subtract', { a: 8, b: 3 }).should.eventually.equal(5));
-  it(".run('multiply', { a: 2, b: 3 })", () => math.run('multiply', { a: 2, b: 3 }).should.eventually.equal(6));
-  it(".run('join', { separator: ',', items: ['a', 'b', 'c'] })", () => math.run('join', { separator: ',', items: ['a', 'b', 'c'] }).should.eventually.equal('a,b,c'));
-  it(".run('add', { a: 2, b: 'asdf' })", () => math.run('add', { a: 2, b: 'asdf' }).should.be.rejectedWith('Problem with key \'b\' : must be of type \'number\''));
+describe('math', () => {
+  it(".run('add', { a: 2, b: 3 })", () => math('add', { a: 2, b: 3 }).should.eventually.equal(5));
+  it(".run('subtract', { a: 8, b: 3 })", () => math('subtract', { a: 8, b: 3 }).should.eventually.equal(5));
+  it(".run('multiply', { a: 2, b: 3 })", () => math('multiply', { a: 2, b: 3 }).should.eventually.equal(6));
+  it(".run('join', { separator: ',', items: ['a', 'b', 'c'] })", () => math('join', { separator: ',', items: ['a', 'b', 'c'] }).should.eventually.equal('a,b,c'));
+  it(".run('add', { a: 2, b: 'asdf' })", () => math('add', { a: 2, b: 'asdf' }).should.be.rejectedWith('Problem with key \'b\' : must be of type \'number\''));
 });
