@@ -52,7 +52,7 @@ const makePath = (endpoint, args) =>
 
 function consumeService(config) {
 
-  const { domain, port, name, jwt } = config;
+  const { domain, port, serviceName, jwt } = config;
 
   const request = {
     get : (endpoint, args, jwt) => new Promise((resolve, reject) => {
@@ -115,7 +115,7 @@ function consumeService(config) {
     return res;
   });
 
-  function run(name, args, jwt) {
+  function run(name, args = {}, jwt) {
     return service.then(service => {
       const f = service[name];
       if(!f) throw 'Not a valid endpoint name.';
