@@ -17,7 +17,7 @@ module.exports = ({ services = [] }) => {
       const jwt = JWT.sign(
         {},
         new Buffer(authClient.secret.data, (authClient.secret.encoding || 'utf8')),
-        Object.assign(authClient.options, { subject: req.user.sub })
+        Object.assign(authClient.options, { subject: req.user && req.user.sub || 'internal'})
       );
       return service(functionName, args, jwt);
     };

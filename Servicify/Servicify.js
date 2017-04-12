@@ -79,6 +79,7 @@ const Servicify = config => {
 
     const handlerChain = []
       .concat(endpoint.use || [])
+      .concat('services')
       .concat('arguments')
       .concat('action')
       .map(name => handlers[name]);
