@@ -1,6 +1,6 @@
 {
   "name": "schema-to-service-consumer",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "\"Consume a service\"",
   "main": "ConsumeService.js",
   "scripts": {
