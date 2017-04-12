@@ -27,7 +27,10 @@ const Servicify = config => {
 
 
   const handlers = {
-    auth: require('./handlers/auth')(config)
+    auth: require('./handlers/auth')(config),
+    action: require('./handlers/action')(config),
+    arguments: require('./handlers/arguments')(config),
+    services: require('./handlers/services')(config)
   };
 
 
@@ -74,39 +77,19 @@ const Servicify = config => {
     }
 */
 
-    const action = (req, res) => {
-      const getArguments = () => Object.assign(
-        Object.assign(
-          Object.assign(
-            {},
-            req.body
-          ),
-          formats.parseArgs(endpoint.arguments, req.query)
-        ),
-        formats.parseArgs(endpoint.arguments, req.params)
-      );
-
-      const validArguments = args => Promise.resolve(endpoint.arguments && formats.validateInput(endpoint.arguments, args)).then(() => args);
-
-      return Promise.resolve()
-        .then(getArguments)
-        .then(validArguments)
-        .then(endpoint.action);
-    };
-
-    const endpointHandlers = {
-      __proto__: handlers,
-      action
-    };
-
-    const handlerChain = (endpoint.use || [])
+    const handlerChain = []
+      .concat(endpoint.use || [])
+      .concat('arguments')
       .concat('action')
-      .map(name => endpointHandlers[name]);
+      .map(name => handlers[name]);
 
     const endpointHandler = (endpoint.action.length > 1 ?
       endpoint.action :
-      (req, res) => handlerChain
-        .reduce((p, f) => p.then(() => f(req, res)), Promise.resolve())
+      (req, res) => Promise.resolve()
+        .then(() => {
+          req.arguments = {};
+        })
+        .then(() => handlerChain.reduce((p, f) => p.then(() => f(req, res, endpoint)), Promise.resolve()))
         .then(
           // Successful response!
           data => {
