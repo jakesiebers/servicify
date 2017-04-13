@@ -26,12 +26,7 @@ const Servicify = config => {
   app.use(bodyParser.json());
 
 
-  const handlers = {
-    auth: require('./handlers/auth')(config),
-    action: require('./handlers/action')(config),
-    arguments: require('./handlers/arguments')(config),
-    services: require('./handlers/services')(config)
-  };
+  const handlers = require('./handlers')(config);
 
 
   const docs = makeDocs(endpoints);
