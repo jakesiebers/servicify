@@ -4,8 +4,6 @@ const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const formats = require('./formats');
-
 
 const makeDocs = endpoints => endpoints.map(endpoint => ({
   method: endpoint.method,
