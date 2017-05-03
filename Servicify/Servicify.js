@@ -72,6 +72,7 @@ const Servicify = config => {
 
     const handlerChain = []
       .concat(endpoint.use || [])
+      .concat('logger')
       .concat('services')
       .concat('arguments')
       .concat('action')
