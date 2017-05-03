@@ -22,12 +22,7 @@ const processRequestJSONResult = (resolve, reject) => res => {
         return;
       }
 
-      if(data.data !== undefined){
-         resolve(data.data);
-         return;
-      }
-
-      reject('Improper json data returned from service');
+      resolve(data.data);
     }catch(e){
       reject('Improper json data returned from service');
     }
