@@ -9,10 +9,11 @@
   "author": "Jake Siebers",
   "license": "ISC",
   "dependencies": {
+    "@withjoy/telemetry": "*",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "http": "0.0.0",
-    "@withjoy/telemetry": "*"
+    "schema-to-service-consumer": "^1.1.3"
   }
 }

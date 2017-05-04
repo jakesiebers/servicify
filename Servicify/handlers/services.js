@@ -1,5 +1,5 @@
 
-const consumeService = require('../../ConsumeService/ConsumeService');
+const consumeService = require('schema-to-service-consumer');
 const JWT = require("jsonwebtoken");
 
 module.exports = ({ services = [] }) => {
