@@ -1,6 +1,6 @@
 {
   "name": "schema-to-service",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "\"Quickly make a service by providing a REST schema\"",
   "main": "Servicify.js",
   "scripts": {
