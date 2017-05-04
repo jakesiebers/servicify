@@ -15,16 +15,16 @@ const makeDocs = endpoints => endpoints.map(endpoint => ({
 
 
 const Servicify = config => {
-  const { name: serviceName, port, domain, authClients, endpoints } = config;
+
+  config.__proto__ = Servicify.defaults;
+  const { name: serviceName, endpoints, use, afterUse, handlers, port } = config;
+  handlers.__proto__ = require('./handlers')(config);
 
 
   const app = express();
 
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
-
-
-  const handlers = require('./handlers')(config);
 
 
   const docs = makeDocs(endpoints);
@@ -37,45 +37,13 @@ const Servicify = config => {
 
 
   endpoints.forEach(endpoint => {
-/*
-    const handlerAndDependencies = (acc, name) => {
-      const handler = handlers[name];
-      handler.name = name;
-      if (!acc.includes(handler)) {
-        const before = (handler.before || []).map(name => handlerAndDependencies(acc, name));
-        acc.push(handler);
-        const after = (handler.after || []).map(name => handlerAndDependencies(acc, name));
-      }
-      return acc;
-    };
-    let uses = (endpoint.uses || []).reduce(handlerAndDependencies, []);
-
-    const shiftBefore = (handler, index) => {
-      for(let a=index-1; a>=0; a--){
-        if(uses[a].before && uses[a].before.includes(handler.name)){
-          return uses.splice(index, 1).splice(a, 0, handler);
-        }
-      }
-    }
-    const shiftAfter = (handler, index) => {
-      for(let a=index+1; a<uses.length; a++){
-        if(uses[a].after && uses[a].after.includes(handler.name)){
-          return uses.splice(a+1, 0, handler).splice(index, 1);
-        }
-      }
-    }
-    let sortedUses;
-    do{
-      uses = (sortedUses || uses);
-    }
-*/
 
     const handlerChain = []
+      .concat(use)
       .concat(endpoint.use || [])
-      .concat('logger')
-      .concat('services')
-      .concat('arguments')
       .concat('action')
+      .concat(endpoint.afterUse || [])
+      .concat(afterUse)
       .map(name => handlers[name]);
 
     const endpointHandler = (endpoint.action.length > 1 ?
@@ -129,6 +97,12 @@ const Servicify = config => {
 
   app.listen(port, () => console.log(`${serviceName} is now listening`))
 
+};
+
+Servicify.defaults = {
+  handlers: {},
+  use: ['logger', 'services', 'arguments'],
+  afterUse: []
 };
 
 module.exports = Servicify;
