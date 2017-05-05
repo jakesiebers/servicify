@@ -27,24 +27,18 @@ const Servicify = config => {
   app.use(bodyParser.json());
 
 
-  const docs = makeDocs(endpoints);
-  endpoints.push({
-    method: 'GET',
-    path: '/endpoints',
-    description: "Documentation on the endpoints provided by this service",
-    action: () => docs
-  });
+  const registerEndpoint = (endpoint, includeHandlers = true) => {
 
-
-  endpoints.forEach(endpoint => {
-
-    const handlerChain = []
-      .concat(use)
-      .concat(endpoint.use || [])
-      .concat('action')
-      .concat(endpoint.afterUse || [])
-      .concat(afterUse)
-      .map(name => handlers[name]);
+    const handlerChain = (includeHandlers ?
+      []
+        .concat('arguments')
+        .concat(use)
+        .concat(endpoint.use || [])
+        .concat('action')
+        .concat(endpoint.afterUse || [])
+        .concat(afterUse) :
+        ['action']
+    ).map(name => handlers[name]);
 
     const endpointHandler = (endpoint.action.length > 1 ?
       endpoint.action :
@@ -86,7 +80,20 @@ const Servicify = config => {
 
     app[endpoint.method.toLowerCase()](endpoint.path, endpointHandler);
 
-  });
+  };
+
+
+  const docs = makeDocs(endpoints);
+  docsEndpoint = {
+    method: 'GET',
+    path: '/endpoints',
+    description: "Documentation on the endpoints provided by this service",
+    action: () => docs
+  };
+
+
+  registerEndpoint(docsEndpoint, false);
+  endpoints.forEach(endpoint => registerEndpoint(endpoint));
 
 
   app.all('*', (req, res) => {
