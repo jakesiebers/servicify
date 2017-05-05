@@ -108,7 +108,7 @@ const Servicify = config => {
 
 Servicify.defaults = {
   handlers: {},
-  use: ['logger', 'services', 'arguments'],
+  use: ['logger', 'services'],
   afterUse: []
 };
 
