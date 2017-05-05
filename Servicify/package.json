@@ -9,6 +9,7 @@
   "author": "Jake Siebers",
   "license": "ISC",
   "dependencies": {
+    "@withjoy/error": "0.0.1",
     "@withjoy/telemetry": "*",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",

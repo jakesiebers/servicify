@@ -2,6 +2,8 @@
 const http = require('http');
 const URL = require('url');
 
+const Error = require('@withjoy/error');
+
 
 const processRequestJSONResult = (resolve, reject) => res => {
 
@@ -18,11 +20,10 @@ const processRequestJSONResult = (resolve, reject) => res => {
       const data = JSON.parse(body.trim());
 
       if(data.error){
-        reject(data.error);
-        return;
+        reject(new Error.Error(data.error.statusCode, data.error.name, data.error.message));
+      } else {
+        resolve(data.data);
       }
-
-      resolve(data.data);
     }catch(e){
       reject('Improper json data returned from service');
     }

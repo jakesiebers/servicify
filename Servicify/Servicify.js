@@ -4,6 +4,8 @@ const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const Error = require('@withjoy/error');
+
 
 const makeDocs = endpoints => endpoints.map(endpoint => ({
   method: endpoint.method,
@@ -27,11 +29,23 @@ const Servicify = config => {
   app.use(bodyParser.json());
 
 
+  const errorResponse = (res, err) => {
+    res.status(err.statusCode).json({
+      error: {
+        message: err.message,
+        statusCode: err.statusCode,
+        name: err.name,
+      }
+    });
+  };
+
+
   const registerEndpoint = (endpoint, includeHandlers = true) => {
 
     const handlerChain = (includeHandlers ?
       []
         .concat('arguments')
+        .concat('error')
         .concat(use)
         .concat(endpoint.use || [])
         .concat('action')
@@ -56,24 +70,11 @@ const Servicify = config => {
           },
           // Something went wrong :(
           err => {
-            if(typeof err === 'string'){
-              (/auth/.test(err) ? res.status(401) : res.status(400)).json({
-                error: err
-              });
-              return;
-            }
+            if(typeof err === 'string') err = new Error.server.InternalServerError(err);
 
-            if(err.message){
-              res.status(500).json({
-                error: err.message
-              });
-              return;
-            }
+            if(!(err instanceof Error.Error)) err = new Error.server.InternalServerError('Unknown error');
 
-            // Should never happen
-            res.status(500).json({
-              error: 'Unknown error'
-            });
+            errorResponse(res, err);
           }
         )
     );
@@ -97,9 +98,7 @@ const Servicify = config => {
 
 
   app.all('*', (req, res) => {
-    res.status(404).json({
-      error: 'Endpoint not found'
-    });
+    errorResponse(res, new Error.client.NotFound('Endpoint not found'));
   });
 
   app.listen(port, () => console.log(`${serviceName} is now listening`))

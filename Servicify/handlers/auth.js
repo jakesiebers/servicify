@@ -40,7 +40,7 @@ module.exports = (config) => {
         req.authToken = token;
       },
       err => {
-        throw 'Failed to authenticate';
+        throw new req.arguments.error.client.Unauthorized('You are not authorized to use this endpoint');
       }
     );
 

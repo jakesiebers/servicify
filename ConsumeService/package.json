@@ -9,6 +9,7 @@
   "author": "Jake Siebers",
   "license": "ISC",
   "dependencies": {
+    "@withjoy/error": "0.0.1",
     "http": "0.0.0",
     "url": "^0.11.0"
   }
