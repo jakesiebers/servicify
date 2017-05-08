@@ -15,6 +15,7 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "http": "0.0.0",
+    "os": "^0.1.1",
     "schema-to-service-consumer": "^1.1.3"
   }
 }

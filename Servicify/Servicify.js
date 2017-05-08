@@ -3,6 +3,7 @@ const http = require('http');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const os = require('os');
 
 const Error = require('@withjoy/error');
 
@@ -108,7 +109,13 @@ const Servicify = config => {
     errorResponse(res, new Error.client.NotFound('Endpoint not found'));
   });
 
-  app.listen(port, () => console.log(`${serviceName} is now listening`))
+  app.listen(port, () => console.log(`${serviceName} is now listening`));
+
+
+  const telemetry = handlers.logger.telemetry;
+  telemetry.context().hostname = os.hostname();
+  telemetry.context().app = "app-server-api";
+
 
 };
 
