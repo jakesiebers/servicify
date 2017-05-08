@@ -29,7 +29,8 @@ const rootProto = obj => {
 const Servicify = config => {
 
   rootProto(config).__proto__ = Servicify.defaults;
-  const { name: serviceName, endpoints, use, afterUse, handlers, port } = config;
+  const { name: serviceName, endpoints, use, afterUse, handlers } = config;
+  const port = config.port || config.PORT;
   handlers.__proto__ = require('./handlers')(config);
 
 
