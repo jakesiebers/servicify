@@ -5,9 +5,9 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (config) => {
 
-  const { authClients } = config;
+  const { auth0Clients, authClients } = config;
 
-  const clients = (authClients || []);
+  const clients = Object.values(authClients || auth0Clients || {});
 
   const getService = name => {
     return serviceConsumers.then(services => {
