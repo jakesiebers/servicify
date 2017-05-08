@@ -117,6 +117,26 @@ const Servicify = config => {
   telemetry.context().app = "app-server-api";
 
 
+  // Crash Handling
+  ["SIGINT", "SIGTERM"].forEach(signalName => {
+    process.on(signalName, () => {
+      console.log("Received " + signalName);
+      console.log("Server exit");
+      process.exit();
+    });
+  });
+
+  process.on("uncaughtException", err => {
+    telemetry.error("server exit due to process exception");
+    telemetry.error(err);
+
+    const kill = timeout => {
+      console.log("Server exit");
+      setTimeout(() => process.exit(1), timeout || 500);
+    };
+    kill(10000);
+  });
+
 };
 
 Servicify.defaults = {
