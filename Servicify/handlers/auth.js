@@ -7,7 +7,10 @@ module.exports = (config) => {
 
   const { auth0Clients, authClients } = config;
 
-  const clients = Object.values(authClients || auth0Clients || {});
+  const clientObject = authClients || auth0Clients || {};
+
+  const clients = [];
+  for(let key in clientObject) clients.push(clientObject[key]);
 
   const getService = name => {
     return serviceConsumers.then(services => {

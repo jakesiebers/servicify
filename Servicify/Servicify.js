@@ -17,9 +17,18 @@ const makeDocs = endpoints => endpoints.map(endpoint => ({
 }));
 
 
+const rootProto = obj => {
+  if(obj.__proto__ === {}.__proto__){
+    return obj;
+  }else{
+    return rootProto(obj.__proto__);
+  }
+}
+
+
 const Servicify = config => {
 
-  config.__proto__ = Servicify.defaults;
+  rootProto(config).__proto__ = Servicify.defaults;
   const { name: serviceName, endpoints, use, afterUse, handlers, port } = config;
   handlers.__proto__ = require('./handlers')(config);
 
@@ -72,9 +81,7 @@ const Servicify = config => {
         .then(
           // Successful response!
           data => {
-            res.json({
-              data: data
-            });
+            res.json({ data });
           },
           // Something went wrong :(
           err => {
