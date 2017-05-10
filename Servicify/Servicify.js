@@ -82,6 +82,7 @@ const Servicify = config => {
         .then(
           // Successful response!
           data => {
+            if (endpoint.method === 'POST') res.status(201);
             res.json({ data });
           },
           // Something went wrong :(
