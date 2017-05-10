@@ -5,32 +5,6 @@ const URL = require('url');
 const Error = require('@withjoy/error');
 
 
-const processRequestJSONResult = (resolve, reject) => res => {
-
-  // Process Body
-  let body = '';
-  res.setEncoding('utf8');
-  res.on('data', chunk => {
-    body += chunk;
-  });
-
-  // Request is completed
-  res.on('end', () => {
-    try{
-      const data = JSON.parse(body.trim());
-
-      if(data.error){
-        reject(new Error.Error(data.error.statusCode, data.error.name, data.error.message));
-      } else {
-        resolve(data.data);
-      }
-    }catch(e){
-      reject('Improper json data returned from service');
-    }
-  });
-
-};
-
 const makePath = (endpoint, args) =>
   endpoint
   .path
@@ -48,7 +22,37 @@ const makePath = (endpoint, args) =>
 
 function consumeService(config) {
 
-  const { domain, port, serviceName, jwt } = config;
+  const { domain, port, serviceName, jwt, isUpstream } = config;
+
+  const processRequestJSONResult = (resolve, reject) => res => {
+
+    // Process Body
+    let body = '';
+    res.setEncoding('utf8');
+    res.on('data', chunk => {
+      body += chunk;
+    });
+
+    // Request is completed
+    res.on('end', () => {
+      try{
+        const data = JSON.parse(body.trim());
+
+        if(data.error){
+          if (isUpstream) {
+            reject(new Error.server.BadGateway('Bad response from the upstream server.'));
+          } else {
+            reject(new Error.Error(data.error.statusCode, data.error.name, data.error.message));
+          }
+        } else {
+          resolve(data.data);
+        }
+      }catch(e){
+        reject('Improper json data returned from service');
+      }
+    });
+
+  };
 
   const request = {
     get : (endpoint, args, jwt) => new Promise((resolve, reject) => {
