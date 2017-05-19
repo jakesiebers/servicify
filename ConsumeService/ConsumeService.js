@@ -1,6 +1,7 @@
 
 const http = require('http');
 const URL = require('url');
+const JWT = require("jsonwebtoken");
 
 const Error = require('@withjoy/error');
 
@@ -21,6 +22,14 @@ const makePath = (endpoint, args) =>
   .join('/');
 
 function consumeService(config) {
+
+  if (config.authClient) {
+    config.jwt = JWT.sign(
+      {},
+      new Buffer(config.authClient.secret.data, (config.authClient.secret.encoding || 'utf8')),
+      config.authClient.options
+    );
+  }
 
   const { domain, port, serviceName, jwt, isUpstream } = config;
 
