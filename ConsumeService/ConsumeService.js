@@ -76,11 +76,11 @@ function consumeService(config) {
         method: 'GET',
         headers: {}
       };
-      if(jwt) options.headers.authorization = `Bearer ${jwt}`;
+      if (jwt) options.headers.authorization = `Bearer ${jwt}`;
 
       const req = http.request(options, processRequestJSONResult(resolve, reject));
 
-      req.on('error', e => reject(e));
+      req.on('error', e => (isUpstream ? reject(new Error.server.BadGateway('Bad response from the upstream server.')) : reject(e)));
 
       req.end();
 
@@ -98,13 +98,13 @@ function consumeService(config) {
           'Content-Type' : 'application/json'
         }
       };
-      if(jwt) options.headers.authorization = `Bearer ${jwt}`;
+      if (jwt) options.headers.authorization = `Bearer ${jwt}`;
 
       const req = http.request(options, processRequestJSONResult(resolve, reject));
 
       req.write(postData);
 
-      req.on('error', e => reject(e));
+      req.on('error', e => (isUpstream ? reject(new Error.server.BadGateway('Bad response from the upstream server.')) : reject(e)));
 
       req.end();
 

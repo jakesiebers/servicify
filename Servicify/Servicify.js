@@ -29,7 +29,7 @@ const rootProto = obj => {
 const Servicify = config => {
 
   rootProto(config).__proto__ = Servicify.defaults;
-  const { name: serviceName, endpoints, use, afterUse, handlers } = config;
+  const { name, endpoints, use, afterUse, handlers } = config;
   const port = config.port || config.PORT;
   handlers.__proto__ = require('./handlers')(config);
 
@@ -118,7 +118,7 @@ const Servicify = config => {
     errorResponse(res, new Error.client.NotFound('Endpoint not found'));
   });
 
-  app.listen(port, () => console.log(`${serviceName} is now listening`));
+  app.listen(port, () => console.log(`${name} is now listening`));
 
 
   const telemetry = handlers.logger.telemetry;
