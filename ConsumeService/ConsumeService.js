@@ -31,7 +31,7 @@ function consumeService(config) {
     );
   }
 
-  const { domain, port, serviceName, jwt, isUpstream } = config;
+  const { domain, port, name, jwt, isUpstream } = config;
 
   const processRequestJSONResult = (resolve, reject) => res => {
 
@@ -115,7 +115,7 @@ function consumeService(config) {
 
   const service = endpoints.then(endpoints => {
     const res = {
-      name: serviceName
+      name: name
     };
     endpoints.forEach(endpoint => {
       const method = endpoint.method.toLowerCase();
@@ -133,7 +133,7 @@ function consumeService(config) {
   }
   run.withJWT = jwt => (name, args) => run(name, args, jwt);
   run.then = service.then.bind(service);
-  run.name = serviceName;
+  run.name = name;
   if (jwt) return run.withJWT(jwt);
   return run;
 
