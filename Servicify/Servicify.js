@@ -118,7 +118,7 @@ const Servicify = config => {
     errorResponse(res, new Error.client.NotFound('Endpoint not found'));
   });
 
-  app.listen(port, () => console.log(`${name} is now listening`));
+  app.listen(port, () => console.log(`${name} is now listening on port ${port}`));
 
 
   const telemetry = handlers.logger.telemetry;
