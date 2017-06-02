@@ -1,5 +1,6 @@
 
 const http = require('http');
+const https = require('https');
 const URL = require('url');
 const JWT = require("jsonwebtoken");
 
@@ -31,7 +32,9 @@ function consumeService(config) {
     );
   }
 
-  const { domain, port, name, jwt, isUpstream } = config;
+  const { domain, name, jwt, isUpstream, ssl } = config;
+
+  const port = config.port || (ssl ? 443 : 80);
 
   const processRequestJSONResult = (resolve, reject) => res => {
 
@@ -78,7 +81,7 @@ function consumeService(config) {
       };
       if (jwt) options.headers.authorization = `Bearer ${jwt}`;
 
-      const req = http.request(options, processRequestJSONResult(resolve, reject));
+      const req = (ssl ? https : http).request(options, processRequestJSONResult(resolve, reject));
 
       req.on('error', e => (isUpstream ? reject(new Error.server.BadGateway('Bad response from the upstream server.')) : reject(e)));
 
@@ -100,7 +103,7 @@ function consumeService(config) {
       };
       if (jwt) options.headers.authorization = `Bearer ${jwt}`;
 
-      const req = http.request(options, processRequestJSONResult(resolve, reject));
+      const req = (ssl ? https : http).request(options, processRequestJSONResult(resolve, reject));
 
       req.write(postData);
 
