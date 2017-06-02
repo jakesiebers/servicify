@@ -47,6 +47,11 @@ const Servicify = config => {
   app.use(corsMiddleware);
 
 
+  const telemetry = handlers.logger.telemetry;
+  telemetry.context().hostname = os.hostname();
+  telemetry.context().app = name;
+
+
   const errorResponse = (res, err) => {
     res.status(err.statusCode).json({
       error: {
@@ -87,6 +92,9 @@ const Servicify = config => {
           },
           // Something went wrong :(
           err => {
+            telemetry.info("Action failed");
+            telemetry.error(err);
+
             if(typeof err === 'string') err = new Error.server.InternalServerError(err);
 
             if(!(err instanceof Error.Error)) err = new Error.server.InternalServerError('Unknown error');
@@ -119,11 +127,6 @@ const Servicify = config => {
   });
 
   app.listen(port, () => console.log(`${name} is now listening`));
-
-
-  const telemetry = handlers.logger.telemetry;
-  telemetry.context().hostname = os.hostname();
-  telemetry.context().app = "app-server-api";
 
 
   // Crash Handling
