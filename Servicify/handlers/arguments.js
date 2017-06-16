@@ -51,7 +51,7 @@ const ofType = type => a => typeof a === type;
 const formats = {
   number: ofType('number'),
   string: ofType('string'),
-  object: a => ofType('object')(a) && !formats.array(input),
+  object: a => ofType('object')(a) && !formats.array(a),
   array: a => ofType('object')(a) && a.constructor === Array,
   domain: a => domainRegex.test(a),
 }
