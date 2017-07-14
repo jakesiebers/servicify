@@ -126,8 +126,6 @@ const Servicify = config => {
     errorResponse(res, new Error.client.NotFound('Endpoint not found'));
   });
 
-  app.listen(port, () => console.log(`${name} is now listening on port ${port}`));
-
 
   // Crash Handling
   ["SIGINT", "SIGTERM"].forEach(signalName => {
@@ -148,6 +146,12 @@ const Servicify = config => {
     };
     kill(10000);
   });
+
+
+  return new Promise(resolve => app.listen(port, () => {
+    resolve();
+    console.log(`${name} is now listening on port ${port}`);
+  }));
 
 };
 
